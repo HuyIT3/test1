@@ -1,0 +1,267 @@
+-- Người thực hiện: Dư Hoàng Huy Mã SV: 22110331
+-- Em cam đoạn tất cả các câu dưới đây đều do em viết code và đều chạy ra kết quả
+--
+Bài 1: QLNV
+Câu 1:	Hãy cho biết tên các dự án mà nhân viên có mã ‘NV01’ tham gia
+SELECT DUAN.TenDA
+FROM PHANCONG INNER JOIN DUAN ON  PHANCONG.MaDA = DUAN.MaDA
+WHERE PHANCONG.MaNV = 'NV01';
+Câu 2:Tính tổng thời gian tham gia các dự án của mỗi nhân viên
+select	PC.MaNV, SUM(PC.Thoigian) as TongThoigian
+from PHANCONG PC
+GROUP BY PC.MaNV;
+Câu 3:Cho biết họ tên các nhân viên chưa tham gia dự án nào
+a. Tìm ngày sinh và địa chỉ của nhân viên “Nguyễn Bảo Hùng”
+
+select NgSinh, DChi
+from NHANVIEN
+where HoNV='Nguyễn' and Tenlot='Bảo' and TenNV='Hùng'
+b. Tìm tên và địa chỉ của các nhân viên làm việc cho phòng “Nghiên cứu”
+select NV.TenNV, NV.DChi
+from NHANVIEN NV inner join PHONGBAN PB on NV.Phong = PB.MaPB
+where PB.TenPB='Nghiên cứu'
+c. Với mỗi dự án được triển khai ở Gò Vấp, cho biết mã dự án, mã phòng quản lý và
+họ tên, ngày sinh trưởng phòng của phòng đó 
+select DUAN.MaDA, PHONGBAN.MaPB, NHANVIEN.HoNV+' '+NHANVIEN.Tenlot+' '+NHANVIEN.TenNV as HoTenTruongPhong, NHANVIEN.NgSinh as NgaySinhTruongPhong
+from DUAN
+inner join PHONGBAN ON DUAN.Phong=PHONGBAN.MaPB
+inner join NHANVIEN ON PHONBAN.TrPhong=NHANVIEN.MaNV
+where DUAN.Diadiem='Gò Vấp'
+d. Với mỗi nhân viên, cho biết họ tên nhân viên và họ tên của người quản lý nhân
+viên đó 
+select nv1.HoNV+' '+ nv1.Tenlot+' '+nv1.TenNV as HoTenNhanVien
+	nv2.HoNV+' '+ nv2.Tenlot+' '+nv2.TenNV as HoTenQuanLy
+from NHANVIEN nv1
+left join NHANVIEN nv2 on nv1.MaNQL=nv2.MaNV
+e. Cho biết mã nhân viên, họ và tên của các nhân viên của phòng “Nghiên cứu” có
+mức lương từ 30000 đến 50000
+select nv.MaNV, nv.HoNV,nv.Tenlot,nv.TenNV
+from NHANVIEN nv
+join PHONG BAN pb on nv.Phong=pb.MaPB
+where pb.TenPB='Nghiên cứu' and nv.Luong between 30000 and 50000
+f. Cho biết mã nhân viên, họ tên nhân viên và mã dự án, tên dự án của các dự án mà
+họ tham gia
+select nv.MaNV, nv.HoNV+' '+nv.Tenlot+' '+nv.TenNV as HoTenNhanVien, ph.MaDA, DA.TenDA
+from PHANCONG ph
+join NHANVIEN nv on ph.MaNV=nv.MaNV
+join DUAN DA on ph.MaDA=DA.MaDA
+g. Cho biết mã nhân viên, họ tên của những người không có người quản lý
+select nv.MaNV, nv.HoNV+' '+nv.Tenlot+' '+nv.TenNV as HoTenNhanVien
+from NHANVIEN nv
+where nv.MaNQL is NULL
+h. Cho biết họ tên của các trưởng phòng có thân nhân
+select distinct nv.MaNV, nv.HoNV+' '+nv.Tenlot+' '+nv.TenNV as HoTenTruongPhong
+from NHANVIEN nv
+inner join PHONGBAN ph on nv.MaNV=ph.TrPhong
+inner join THANNHAN tn on nv.MaNV=tn.MaNV
+i. Tính tổng lương nhân viên, lương cao nhất, lương thấp nhất và mức lương trung
+bình 
+- Tổng lương nhân viên
+select SUM(Luong) as TongLuongNhanVien
+from NHANVIEN
+- Lương cao nhất
+select MAX(Luong) as LuongCaoNhat
+from NHANVIEN
+- Lương thấp nhất
+select MIN(Luong) as LuongThapNhat
+from NHANVIEN
+- Lương trung bình
+select AVG(Luong) as LuongTB
+from NHANVIEN
+j. Cho biết tổng số nhân viên và mức lương trung bình của phòng “Nghiên cứu”
+select COUNT(nv.MaNV) as TongSoNV AVG(nv.Luong) as LuongTB
+from NHANVIEN nv
+inner join PHONGBAN ph on nv.Phong=ph.MaPB
+where ph.TenPB='Nghiên cứu'
+k. Với mỗi phòng, cho biết mã phòng, số lượng nhân viên và mức lương trung bình 
+select ph.MaPB, COUNT(nv.MaNV) as SoLuongNV , AVG(nv.Luong) as LuongTB
+from PHONGBAN ph
+left join NHANVIEN nv on ph.MaPB = nv.Phong
+group by ph.MaPB
+
+l. Với mỗi dự án, cho biết mã dự án, tên dự án và tổng số nhân viên tham gia
+select pc.MaDA, da.TenDA, COUNT(pc.MaNV) as TongSoNhanVien
+from PHANCONG pc
+join DUAN da on pc.MaDA=da.MaDA
+group by pc.MaDA , da.TenDA
+m. Với mỗi dự án có nhiều hơn 2 nhân viên tham gia, cho biết mã dự án, tên dự án và
+số lượng nhân viên tham gia 
+select pc.MaDA, da.TenDA, COUNT(pc.MaNV) as TongSoNV
+from PHANCONG pc
+join DUAN da on pc.MaDA=DA.MaDA
+group by pc.MaDA, da.TenDA
+having COUNT(pc.MaNV)>2
+n. Với mỗi dự án, cho biết mã số dự án, tên dự án và số lượng nhân viên phòng số 5
+tham gia 
+select da.MaDA, da.TenDA, COUNT(pc.MaNV) as SoLuongNVPhong5
+from PHANCONG pc
+join DUAN da on pc.MaDA = da.MaDA
+join NHANVIEN nv on pc.MaNV=nv.MaNV
+where nv.Phong=5
+group by da.MaDA, da.TenDA
+o. Với mỗi phòng có nhiều hơn 2 nhân viên, cho biết mã phòng và số lượng nhân
+viên có lương lớn hơn 25000
+select pb.MaPB, COUNT(nv.MaNV) as SoLuongNV
+from NHANVIEN nv
+join PHONGBAN pb on nv.Phong=pb.MaPB
+where nv.Luong>25000
+group by pb.MaPB
+having count(nv.MaNV) >2
+p. Với mỗi phòng có mức lương trung bình lớn hơn 30000, cho biết mã phòng, tên
+phòng, số lượng nhân viên của phòng đó
+select pb.MaPB,pb.TenPB, COUNT(nv.MaNV) as SoLuongNV
+from PHONGBAN pb
+join NHANVIEN nv on pb.MaPB =nv.Phong
+group by pb.MaPB, pb.TenPB
+having AVG(nv.Luong) >30000
+q. Với mỗi phòng có mức lương trung bình lớn hơn 30000, cho biết mã phòng, tên
+phòng, số lượng nhân viên nam của phòng đó 
+select pb.MaPB,pb.TenPB, COUNT(case when nv.Phai='Nam' then nv.MaNV end) as SoLuongNV
+from PHONGBAN pb
+join NHANVIEN nv on pb.MaPB =nv.Phong
+group by pb.MaPB, pb.TenPB
+having AVG(nv.Luong) >30000
+Bai2
+Hãy viết biểu thức đại số quan hệ thực hiện các yêu cầu sau:
+a.	Cho biết Địa chỉ và số điện thoại của Nhà xuất bản “Addison Wesley”
+select DiaChi, SoDT
+from NXB
+where TenNXB='Addison Wesley'
+b. 	Cho biết mã sách và Tựa sách của những cuốn sách được xuất bản bởi nhà xuất bản “Addison Wesley”
+select a.MaSach, a.Tua
+from DAUSACH a inner join NXB b on a.MaNXB=b.MaNXB
+where b.TenNXB='Addison Wesley'
+c.	Cho biết mã sách và Tựa sách của những cuốn sách có tác giả là “Hemingway”
+select a.MaSach, a.Tua
+from DAUSACH a inner join TacGia b on a.MaSach=b.MaSach
+where b.TenTG='Hemingway'
+
+d.	Với mỗi đầu sách, cho biết tựa và số lượng cuốn sách mà thư viện đang sở hữu 
+select a.Tua, Count(*) as soluongsach
+from DAUSACH a inner join CuonSach b on a.MaSach=b.MaSach
+group by a.MaSach,a.Tua
+e.	Với mỗi độc giả, hãy cho biết Tên, địa chỉ và số lượng cuốn sách mà người đó đã mượn 
+select a.TenDG ,a.DiaChi, count(M.MaCuon) as SoLuongSachMuon
+from DocGia a left join Muon M on a.MaDG=M.MaDG
+group by a.MaDG, a.TenDG, a.DiaChi
+f.	Cho biết mã cuốn, tựa sách và vị trí của những cuốn sách được xuất bản bởi nhà xuất bản “Addison Wesley”
+select e.MaCuon, d.Tua, e.ViTri
+from CuonSach e inner join DAUSACH d ON e.MaSach=d.MaSach
+inner join NXB n on d.MaNXB=n.MaNXB
+where n.TenNXB='Addison Wesley'
+g.	Với mỗi đầu sách, hãy cho biết Tên nhà xuất bản và số lượng tác giả 
+select a.Tua, b.TenNXB ,count(tg.TenTG)
+FROM DAUSACH a inner join NXB b on a.MaNXB=b.MaNXB
+left join TacGia tg on a.MaSach=tg.MaSach
+group by a.MaSach, a.Tua, b.TenNXB
+h.	Hãy cho biết Tên, địa chỉ, số điện thoại của những độc giả đã mượn từ 5 cuốn sách trở lên 
+select a.TenDG, a.DiaChi, a.SoDT
+from DocGia a
+inner join (select MaDG, count(*) as SoLuongMon from Muon group by MaDG having count(*) >=5) as muonnhieu on a.MaDG=muonnhieu.MaDG
+i.	Cho biết mã NXB, tên NXB và số lượng đầu sách của NXB đó trong CSDL
+
+select NXB.MaNXB,NXB.TenNXB, count(a.MaSach) as soluongDauSach
+from NXB
+left join DAUSACH a on NXB.MaNXB=a.MaNXB
+group by NXB.MaNXB, NXB.TenNXB
+j.	Cho biết mã NXB, tên NXB và địa chỉ của những NXB có từ 100 đầu sách trở lên 
+select NXB.MaNXB,NXB.TenNXB,NXB.DiaChi
+from NXB
+inner join DAUSACH a on NXB.MaNXB=a.MaNXB
+group by NXB.MaNXB, NXB.TenNXB, NXB.DiaChi
+having count(a.MaSach) >=100
+k.	Cho biết mã NXB, tên NXB, và số lượng tác giả đã hợp tác với NXB đó 
+select NXB.MaNXB,NXB.TenNXB,count(tg.MaSach) as SoLuongTGHopTac
+from NXB
+left join DAUSACH a on NXB.MaNXB=a.MaNXB
+left join TacGia tg on a.MaSach=tg.MaSach
+group by NXB.MaNXB, NXB.TenNXB
+l.	Tựa và số lượng tác giả của những cuốn sách có tác giả là “Hemingway” mà độc giả “Nguyễn Văn A” đã từng mượn 
+select a.Tua , count(tg.TenTG)
+from Muon m
+inner join CuonSach c on m.MaCuon=c.MaCuon
+inner join DAUSACH a on c.MaSach=a.MaSach
+inner join TacGia tg on a.MaSach=tg.MaSach
+inner join DocGia dg on m.MaDG=dg.MaDG
+where tg.TenTG='Hemingway' and dg.TenDG='Nguyễn Văn A'
+group by A.Tua
+Bài tập 3. 
+Cho CSDL gồm các quan hệ sau :
+	NV( MSNV , TEN , MSCOQUAN , CONGVIEC , LUONG)
+	COQUAN( MSCOQUAN , TENCOQUAN , DIACHI)
+Biểu diễn bằng ngôn ngữ  SQL và đại số quan hệ các yêu cầu sau :
+a. Tìm tên những nhân viên ở cơ quan có mã số là 50
+	select NV.TEN
+	from NV
+	inner join COQUAN a on NV.MSCOQUAN=a.MSCOQUAN
+	where NV.MSCOQUAN=50
+b. Tìm mã số tất cả các cơ quan từ quan hệ NV
+SELECT distinct MSCOQUAN
+from NV
+c. Tìm tên các nhân viên ở cơ quan có mã số là 15,20,25
+select NV.TEN
+	from NV
+	inner join COQUAN a on NV.MSCOQUAN=a.MSCOQUAN
+	where NV.MSCOQUAN=15 or NV.MSCOQUAN=20 or NV.MSCOQUAN=25
+
+d. Tìm tên những người làm việc ở Đồ Sơn
+select NV.TEN
+from NV
+inner join COQUAN a on NV.MSCOQUAN=a.MSCOQUAN
+where a.DIACHI='Đồ Sơn'
+Bài tập 4.
+	Thực hiện các yêu cầu sau bằng ngôn ngữ SQL:
+1.	Cho biết danh sách các người thợ hiện không tham gia vào một  hợp đồng sửa chữa nào.
+select MaTho, TenTho
+from THO except ( select THO.MaTho,TenTho
+					from THO inner join CHITIET_HD on THO.MaTho=CHITIET_HD.MaTho)
+2.	Cho biết danh sách những hợp đồng đã thanh lý nhưng chưa được thanh toán tiền đầy đủ.
+select SoHD
+from dbo.HOPDONG except (select HOPDONG.SoHD 
+							from dbo.HOPDONG , (select SoHD , sum(SoTienThu) as SoTien
+													from dbo.PHIEUTHU
+													GROUP BY SoHD)Q
+							where HOPDONG.SoHD = Q.SoHD and HOPDONG.TriGiaHD= Q.SoTien)
+3.	Cho biết danh sách những hợp đồng cần phải hoàn tất trước ngày 31/12/2023
+select SoHD,MaKH
+from dbo.HOPDONG
+Where NgayGiaoDK < = '2023/12/31'
+4.	Cho biết người thợ nào thực hiện công việc nhiều nhất.
+select top 1 MaTho,TenTho,SLCV
+from (select THO.MaTho, TenTho, count(MaCV) as SLCV
+		from dbo.THO inner join CHITIET_HD on THO.MaTho=CHITIET_HD.MaTho
+		group by THO.MaTho,TenTho) as Q
+order by SLCV desc;
+5.	Cho biết người thợ nào có tổng trị giá công việc được giao cao nhất.
+select top 1 MaTho, TongGT
+from (select MaTho, sum(TriGiaCV) AS TongGT
+		from CHITIET_HD
+		group by MaTho) as Q
+order by TongGT desc;
+Bài tập 5.
+	Dùng đại số quan hệ và SQL để viết các câu hỏi sau:
+a. Danh sách các giáo viên dạy các môn học có số tiết từ 45 trở lên
+SELECT MaGV,TenGV
+from dbo.GV,dbo.MONHOC
+where GV.MaMH=MONHOC.MaMH AND MONHOC.SoTiet>=45
+b. Danh sách giáo viên được phân công gác thi trong học kỳ 1
+SELECT DISTINCT GV.MaGV, TenGV
+from GV, PC_COI_THI
+WHERE GV.MaGV = PC_COI_THI.MaGV and HKY=1
+c. Danh sách giáo viên không được phân công gác thi trong học kỳ 1
+select MaGV,TenGV
+from GV
+except (select distinct GV.MaGV, TenGV
+		from GV , PC_COI_THI
+		where GV.MaGV = PC_COI_THI.MaGV and HKY=1)
+d. Cho biết lịch thi môn văn (TENMH = ‘Toán’)
+select HKY,NGAY,GIO,PHG
+from BUOITHI, MONHOC
+where BUOITHI.MaMH = MONHOC.MaMH AND MONHOC.TenMH='Toán'
+e. Cho biết các buổi gác thi của các giáo viên chủ nhiệm môn văn (TENMH = ‘Toán’).
+select *
+from (select MaGV, TenGV
+		from GV, MONHOC
+		WHERE GV.MaMH = MONHOC.MaMH and TenMH='Toán') as Q
+		inner join PC_COI_THI on Q.MaGV = PC_COI_THI.MaGV
+

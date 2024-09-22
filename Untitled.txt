@@ -1,0 +1,123 @@
+-- Người thực hiện: Dư Hoàng Huy Mã SV: 22110331
+-- Em cam đoạn tất cả các câu dưới đây đều do em viết code và đều chạy ra kết quả
+--
+Bài 1: QLNV
+Câu 1:	Hãy cho biết tên các dự án mà nhân viên có mã ‘NV01’ tham gia
+SELECT DUAN.TenDA
+FROM PHANCONG INNER JOIN DUAN ON  PHANCONG.MaDA = DUAN.MaDA
+WHERE PHANCONG.MaNV = 'NV01';
+Câu 2:Tính tổng thời gian tham gia các dự án của mỗi nhân viên
+select	PC.MaNV, SUM(PC.Thoigian) as TongThoigian
+from PHANCONG PC
+GROUP BY PC.MaNV;
+Câu 3:Cho biết họ tên các nhân viên chưa tham gia dự án nào
+a. Tìm ngày sinh và địa chỉ của nhân viên “Nguyễn Bảo Hùng”
+
+select NgSinh, DChi
+from NHANVIEN
+where HoNV='Nguyễn' and Tenlot='Bảo' and TenNV='Hùng'
+b. Tìm tên và địa chỉ của các nhân viên làm việc cho phòng “Nghiên cứu”
+select NV.TenNV, NV.DChi
+from NHANVIEN NV inner join PHONGBAN PB on NV.Phong = PB.MaPB
+where PB.TenPB='Nghiên cứu'
+c. Với mỗi dự án được triển khai ở Gò Vấp, cho biết mã dự án, mã phòng quản lý và
+họ tên, ngày sinh trưởng phòng của phòng đó 
+select DUAN.MaDA, PHONGBAN.MaPB, NHANVIEN.HoNV+' '+NHANVIEN.Tenlot+' '+NHANVIEN.TenNV as HoTenTruongPhong, NHANVIEN.NgSinh as NgaySinhTruongPhong
+from DUAN
+inner join PHONGBAN ON DUAN.Phong=PHONGBAN.MaPB
+inner join NHANVIEN ON PHONBAN.TrPhong=NHANVIEN.MaNV
+where DUAN.Diadiem='Gò Vấp'
+d. Với mỗi nhân viên, cho biết họ tên nhân viên và họ tên của người quản lý nhân
+viên đó 
+select nv1.HoNV+' '+ nv1.Tenlot+' '+nv1.TenNV as HoTenNhanVien
+	nv2.HoNV+' '+ nv2.Tenlot+' '+nv2.TenNV as HoTenQuanLy
+from NHANVIEN nv1
+left join NHANVIEN nv2 on nv1.MaNQL=nv2.MaNV
+e. Cho biết mã nhân viên, họ và tên của các nhân viên của phòng “Nghiên cứu” có
+mức lương từ 30000 đến 50000
+select nv.MaNV, nv.HoNV,nv.Tenlot,nv.TenNV
+from NHANVIEN nv
+join PHONG BAN pb on nv.Phong=pb.MaPB
+where pb.TenPB='Nghiên cứu' and nv.Luong between 30000 and 50000
+f. Cho biết mã nhân viên, họ tên nhân viên và mã dự án, tên dự án của các dự án mà
+họ tham gia
+select nv.MaNV, nv.HoNV+' '+nv.Tenlot+' '+nv.TenNV as HoTenNhanVien, ph.MaDA, DA.TenDA
+from PHANCONG ph
+join NHANVIEN nv on ph.MaNV=nv.MaNV
+join DUAN DA on ph.MaDA=DA.MaDA
+g. Cho biết mã nhân viên, họ tên của những người không có người quản lý
+select nv.MaNV, nv.HoNV+' '+nv.Tenlot+' '+nv.TenNV as HoTenNhanVien
+from NHANVIEN nv
+where nv.MaNQL is NULL
+h. Cho biết họ tên của các trưởng phòng có thân nhân
+select distinct nv.MaNV, nv.HoNV+' '+nv.Tenlot+' '+nv.TenNV as HoTenTruongPhong
+from NHANVIEN nv
+inner join PHONGBAN ph on nv.MaNV=ph.TrPhong
+inner join THANNHAN tn on nv.MaNV=tn.MaNV
+i. Tính tổng lương nhân viên, lương cao nhất, lương thấp nhất và mức lương trung
+bình 
+- Tổng lương nhân viên
+select SUM(Luong) as TongLuongNhanVien
+from NHANVIEN
+- Lương cao nhất
+select MAX(Luong) as LuongCaoNhat
+from NHANVIEN
+- Lương thấp nhất
+select MIN(Luong) as LuongThapNhat
+from NHANVIEN
+- Lương trung bình
+select AVG(Luong) as LuongTB
+from NHANVIEN
+j. Cho biết tổng số nhân viên và mức lương trung bình của phòng “Nghiên cứu”
+select COUNT(nv.MaNV) as TongSoNV AVG(nv.Luong) as LuongTB
+from NHANVIEN nv
+inner join PHONGBAN ph on nv.Phong=ph.MaPB
+where ph.TenPB='Nghiên cứu'
+k. Với mỗi phòng, cho biết mã phòng, số lượng nhân viên và mức lương trung bình 
+select ph.MaPB, COUNT(nv.MaNV) as SoLuongNV , AVG(nv.Luong) as LuongTB
+from PHONGBAN ph
+left join NHANVIEN nv on ph.MaPB = nv.Phong
+group by ph.MaPB
+
+l. Với mỗi dự án, cho biết mã dự án, tên dự án và tổng số nhân viên tham gia
+select pc.MaDA, da.TenDA, COUNT(pc.MaNV) as TongSoNhanVien
+from PHANCONG pc
+join DUAN da on pc.MaDA=da.MaDA
+group by pc.MaDA , da.TenDA
+m. Với mỗi dự án có nhiều hơn 2 nhân viên tham gia, cho biết mã dự án, tên dự án và
+số lượng nhân viên tham gia 
+select pc.MaDA, da.TenDA, COUNT(pc.MaNV) as TongSoNV
+from PHANCONG pc
+join DUAN da on pc.MaDA=DA.MaDA
+group by pc.MaDA, da.TenDA
+having COUNT(pc.MaNV)>2
+n. Với mỗi dự án, cho biết mã số dự án, tên dự án và số lượng nhân viên phòng số 5
+tham gia 
+select da.MaDA, da.TenDA, COUNT(pc.MaNV) as SoLuongNVPhong5
+from PHANCONG pc
+join DUAN da on pc.MaDA = da.MaDA
+join NHANVIEN nv on pc.MaNV=nv.MaNV
+where nv.Phong=5
+group by da.MaDA, da.TenDA
+o. Với mỗi phòng có nhiều hơn 2 nhân viên, cho biết mã phòng và số lượng nhân
+viên có lương lớn hơn 25000
+select pb.MaPB, COUNT(nv.MaNV) as SoLuongNV
+from NHANVIEN nv
+join PHONGBAN pb on nv.Phong=pb.MaPB
+where nv.Luong>25000
+group by pb.MaPB
+having count(nv.MaNV) >2
+p. Với mỗi phòng có mức lương trung bình lớn hơn 30000, cho biết mã phòng, tên
+phòng, số lượng nhân viên của phòng đó
+select pb.MaPB,pb.TenPB, COUNT(nv.MaNV) as SoLuongNV
+from PHONGBAN pb
+join NHANVIEN nv on pb.MaPB =nv.Phong
+group by pb.MaPB, pb.TenPB
+having AVG(nv.Luong) >30000
+q. Với mỗi phòng có mức lương trung bình lớn hơn 30000, cho biết mã phòng, tên
+phòng, số lượng nhân viên nam của phòng đó 
+select pb.MaPB,pb.TenPB, COUNT(case when nv.Phai='Nam' then nv.MaNV end) as SoLuongNV
+from PHONGBAN pb
+join NHANVIEN nv on pb.MaPB =nv.Phong
+group by pb.MaPB, pb.TenPB
+having AVG(nv.Luong) >30000
